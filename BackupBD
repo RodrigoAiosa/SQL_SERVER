@@ -1,0 +1,37 @@
+DECLARE @bk_path VARCHAR(256);
+DECLARE @db_name VARCHAR(50);
+DECLARE @bk_file_date VARCHAR(20);
+DECLARE @bk_file_name VARCHAR(256);
+DECLARE @i INT = 1;
+ 
+/* Specify database backup directory. Change this as needed. */
+SET @bk_path = 'C:\Backup\';
+ 
+/* Backup file format DBname_YYYYMMDD_HHMMSS.BAK. Change this as needed. */
+SELECT @bk_file_date = FORMAT(GETDATE(), 'yyyyMMdd_hhmmss');
+ 
+DECLARE @db_names TABLE (
+   id INT IDENTITY(1,1) PRIMARY KEY, 
+   db_name VARCHAR(50) NOT NULL );
+ 
+INSERT INTO @db_names
+   SELECT name 
+   FROM master.sys.databases 
+   WHERE name NOT IN ('master','model','msdb','tempdb')  /* Databases which needs to be excluded */
+      AND state = 0 /* Include only the database which are online */
+      AND is_in_standby = 0; /* database is not read only for log shipping */
+ 
+WHILE EXISTS (SELECT 1 from @db_names WHERE Id = @i)
+BEGIN
+    
+   SELECT @db_name = db_name from @db_names WHERE Id = @i;
+   PRINT 'Backup Started: ' + @db_name
+    
+   SET @bk_file_name = @bk_path + @db_name + '_' + @bk_file_date + '.BAK';
+ 
+   BACKUP DATABASE @db_name TO DISK = @bk_file_name WITH STATS;
+ 
+   SET @i = @i + 1;
+    
+END
+GO
