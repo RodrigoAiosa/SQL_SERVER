@@ -1,0 +1,11 @@
+ DELETE T
+FROM
+(
+SELECT *
+, DupRank = ROW_NUMBER() OVER (
+              PARTITION BY nome_aluno --Nome coluna
+              ORDER BY (SELECT NULL)
+            )
+FROM tb_CadAluno -- nome tabela
+) AS T
+WHERE DupRank > 1 
