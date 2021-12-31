@@ -1,0 +1,23 @@
+CREATE OR ALTER VIEW vUltimasVendas
+AS
+	SELECT 
+		 sod.SalesOrderID						as 'NUM PEDIDO'
+		,FORMAT(soh.OrderDate,'dd/MM/yyyy')		as 'DATA PEDIDO'
+		,sod.CarrierTrackingNumber				as 'NUM REF NAVIO'
+		,p.Name									as 'PRODUTO'
+		,p.ProductNumber						as 'NUM REF PRODUTO'
+		,p.Color								as 'COR'
+		,p.Size									as 'TAMANHO'
+		,pc.Name								as 'CATEGORIA'
+		,psc.Name								as 'SUBCATEGORIA'
+		,sod.OrderQty							as 'QUANTIDADE'
+		,CONVERT(decimal(18,2),sod.UnitPrice)	as 'VALOR UNITÁRIO'
+		,sod.UnitPriceDiscount					as 'DESCONTO'
+	FROM 
+		Sales.SalesOrderDetail sod
+		INNER JOIN Sales.SalesOrderHeader soh on soh.SalesOrderID = sod.SalesOrderID
+		INNER JOIN Production.Product p on p.ProductID = sod.ProductID
+		INNER JOIN Production.ProductSubcategory psc on psc.ProductSubcategoryID = p.ProductSubcategoryID
+		INNER JOIN Production.ProductCategory pc on pc.ProductCategoryID = psc.ProductCategoryID
+	
+SELECT * FROM vUltimasVendas
