@@ -1,0 +1,16 @@
+CREATE OR ALTER TRIGGER tgr_DeleterDado
+ON 
+	CadAluno
+INSTEAD OF DELETE
+AS
+	BEGIN
+		DECLARE @id INT 
+		SELECT  @id = (SELECT id_aluno FROM deleted)
+
+		UPDATE CadAluno
+		SET ativo = '0'
+		WHERE id_aluno = @id
+
+	END
+
+	DROP TRIGGER tgr_DeleterDado
