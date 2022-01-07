@@ -1,0 +1,45 @@
+USE 
+	BD_ESCOLAEXCEL
+
+IF NOT EXISTS(SELECT * FROM sysobjects WHERE name = 'CadAluno' and xtype = 'U') 
+	
+	CREATE TABLE CadAluno
+	(
+		 id_aluno			int IDENTITY (1,1) PRIMARY KEY NOT NULL
+		,nome				varchar(50)
+		,sexo				varchar(1) --M ou F
+		,email				varchar(30)
+		,data_hora_inf		datetime   DEFAULT GETDATE() NOT NULL
+		,ativo				varchar(1) DEFAULT '1'--1 ativo 0 inativo 
+	)
+GO
+
+SELECT * FROM CadAluno
+
+delete from CadAluno
+DBCC CHECKIDENT('cadAluno', RESEED, 0)
+
+INSERT INTO CadAluno
+	 (Nome,Sexo,email)
+VALUES
+	 ('Aluno_01','F','aluno01@gmail.com')
+	,('Aluno_02','F','aluno02@gmail.com')
+	,('Aluno_03','M','aluno03@gmail.com')
+	,('Aluno_04','F','aluno04@gmail.com')
+	,('Aluno_05','F','aluno05@gmail.com')
+	,('Aluno_06','F','aluno06@gmail.com')
+	,('Aluno_07','M','aluno07@gmail.com')
+	,('Aluno_08','F','aluno08@gmail.com')
+	,('Aluno_09','F','aluno09@gmail.com')
+	,('Aluno_10','M','aluno10@gmail.com')
+	,('Aluno_11','F','aluno11@gmail.com')
+	,('Aluno_12','F','aluno12@gmail.com')
+	,('Aluno_13','M','aluno13@gmail.com')
+	,('Aluno_14','M','aluno14@gmail.com')
+
+--Criar Trigger com o seguinte objetivo: Ao deletar um dado pelo campo 'id_aluno' a coluna ''status_inf'' irá mudar de 1 (Ativo) para 0 (Inativo)
+
+DELETE FROM 
+	CadAluno 
+WHERE id_aluno = '4'
+SELECT * FROM CadAluno
