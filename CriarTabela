@@ -43,3 +43,17 @@ DELETE FROM
 	CadAluno 
 WHERE id_aluno = '4'
 SELECT * FROM CadAluno
+
+
+--PROCEDURE Deletar Dados
+
+CREATE or ALTER PROCEDURE sp_Deletar @Nome varchar(50)
+AS
+	DELETE FROM 
+		CadAluno
+	WHERE 
+		nome = @Nome
+
+exec sp_Deletar 'Aluno_12'
+SELECT * FROM CadAluno
+
