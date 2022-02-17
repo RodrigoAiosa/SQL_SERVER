@@ -1,0 +1,7 @@
+No Power Automate Desktop > SQL 
+
+BULK INSERT tbDados
+FROM 'C:\Users\user\OneDrive\Power Automate\geradorbrasileiro\Base.txt'
+WITH (FIRSTROW = 2,
+    FIELDTERMINATOR = ',',
+    ROWTERMINATOR='\n' );
