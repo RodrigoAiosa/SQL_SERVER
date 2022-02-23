@@ -1,0 +1,78 @@
+SELECT * FROM Sales.SalesOrderDetail
+
+SELECT * FROM Sales.SalesOrderHeader
+
+select * from Sales.Customer
+
+select * from Sales.SalesTerritory
+
+SELECT * FROM Production.Product
+
+SELECT * FROM Production.ProductSubcategory
+
+SELECT * FROM Production.ProductCategory
+
+
+CREATE or ALTER VIEW v_CriaTabelaFato
+AS
+	SELECT 
+			 sod.SalesOrderID								as "NUM PEDIDO"
+			,FORMAT(soh.OrderDate,'dd/MMM/yyyy')			as "DATA PEDIDO"
+			,p.Name											as "PRODUTO"
+			,P.Color										as "COR"
+			,pc.Name										as "CATEGORIA"
+			,pcs.Name										as "SUBCATEGORIA"
+			,st.Name										as "PAÍS"
+			,sod.OrderQty									as "QUANTIDADE"
+			,sod.UnitPrice									as "VALOR UNITARIO"
+			,sod.UnitPriceDiscount							as "DESCONTO"
+
+	FROM Sales.SalesOrderDetail sod
+
+	INNER JOIN Sales.SalesOrderHeader soh
+		ON soh.SalesOrderID = sod.SalesOrderID
+	INNER JOIN Production.Product p
+		ON sod.ProductID = p.ProductID
+	INNER JOIN Production.ProductSubcategory pcs
+		ON pcs.ProductSubcategoryID = p.ProductSubcategoryID
+	INNER JOIN Production.ProductCategory pc
+		ON pc.ProductCategoryID = pcs.ProductCategoryID
+	INNER JOIN Sales.Customer c
+		ON c.CustomerID = soh.CustomerID
+	INNER JOIN Sales.SalesTerritory st
+		ON st.TerritoryID = c.TerritoryID
+
+
+CREATE or ALTER VIEW v_DimCalendario
+AS
+	SELECT	 FORMAT(soh.OrderDate,'dd/MM/yyyy')				as "DATA"
+			,YEAR(soh.OrderDate)							as "ANO"
+			,YEAR(soh.OrderDate)*100+MONTH(soh.OrderDate)	as "IDMESANO"			
+			,upper(left(FORMAT(soh.OrderDate,'MMM'),1)) + lower(substring(FORMAT(soh.OrderDate,'MMM'),2,len(FORMAT(soh.OrderDate,'MMM'))))					as "MÊS"
+		FROM Sales.SalesOrderHeader soh
+		GROUP BY
+			soh.OrderDate
+		ORDER BY
+			soh.OrderDate
+			OFFSET 0 rows
+
+
+CREATE or ALTER VIEW v_DimProdutoSelecionado
+	AS
+		SELECT
+			 p.ProductID		as 'ID_PRODUTO'
+			,p.Name				as 'PRODUTO'
+			,pc.Name			as 'CATEGORIA'
+			,psc.name			as 'SUBCATEGORIA'
+		FROM Production.Product p 
+		
+	INNER JOIN Production.ProductSubcategory pcs
+		ON pcs.ProductSubcategoryID = p.ProductSubcategoryID
+	INNER JOIN Production.ProductCategory pc
+		ON pc.ProductCategoryID = pcs.ProductCategoryID
+	INNER JOIN Production.ProductSubcategory psc
+		ON psc.ProductSubcategoryID = p.ProductSubcategoryID
+
+SELECT * FROM v_CriaTabelaFato
+SELECT * FROM v_DimProdutoSelecionado
+SELECT * FROM v_DimCalendario
